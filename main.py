@@ -23,7 +23,7 @@ elems_title = soup.select(tag_title)
 elems_url = soup.select(tag_url)
 
 def save_firestore():
-	for elem_update, elem_title, elem_url in zip(elems_update, elems_title, elems_url):
+  for elem_update, elem_title, elem_url in zip(elems_update, elems_title, elems_url):
 		update = datetime.strptime(elem_update.contents[0], '%Y年%m月%d日').date()
 		update = datetime.strftime(update, '%Y/%m/%d')
 		data = {
@@ -31,21 +31,21 @@ def save_firestore():
 			'issueTitle': elem_title.contents[0],
 			'updateTime': update,
 			'detailUrl': url_city + elem_url.get('href')
-		}
+			}
 
 		db.collection('issues').add(data)
 
 def delete_collection(coll_ref, batch_size):
-    docs = coll_ref.list_documents(page_size=batch_size)
-    deleted = 0
+	docs = coll_ref.list_documents(page_size=batch_size)
+	deleted = 0
 
-    for doc in docs:
-        print(f'Deleting doc {doc.id} => {doc.get().to_dict()}')
-        doc.delete()
-        deleted = deleted + 1
+		for doc in docs:
+			print(f'Deleting doc {doc.id} => {doc.get().to_dict()}')
+			doc.delete()
+			deleted = deleted + 1
 
-    if deleted >= batch_size:
-        return delete_collection(coll_ref, batch_size)
+		if deleted >= batch_size:
+			return delete_collection(coll_ref, batch_size)
 
 def main(event, content):
 	delete_collection(db.collection('issues'), 10)
